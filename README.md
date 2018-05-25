@@ -1,3 +1,66 @@
+## Installation of MySQL on Microsoft Azure:
+
+1)	Created a students account on Microsoft Azure.
+2)	Created Ubuntu Virtual Machine by undergoing basic configuration settings such as filling in username, password, virtual machine size and availability details.
+3)	Connected with the Virtual Machine by using Putty. We use public IP address to connect with the VM.
+4)  After we start installing MySQL using the following commands:
++ sudo apt-get update
++ sudo apt-get install mysql-server
+5) After installation we make change in the bind address of configuration file. We open the configuration file by using following commands:
++ sudo nano /etc/mysql/mysql.conf.d/mysqld.cnf
+6) After this we restart MySQL
++ sudo systemctl restart mysql.service
+
+## Code For SQL queries:
++ 1
+```
+SELECT sts.name_stop, 
+       Count(sts.stop_id) 
+FROM   stops sts 
+       JOIN stoptimes stt 
+         ON ( sts.stop_id = stt.stop_id ) 
+       JOIN trips tp 
+         ON stt.trip_id = tp.trip_id 
+GROUP  BY sts.name_stop 
+ORDER  BY 2 DESC 
+LIMIT  3;
+```
++ 2
+```
+SELECT DISTINCT stt.stop_sequence, 
+                sts.name_stop, 
+                tp.route_id, 
+                tp.trip_headsign, 
+                tp.trip_id 
+FROM   ((trips tp 
+         JOIN stoptimes stt 
+           ON tp.trip_id = stt.trip_id) 
+        JOIN stops sts 
+          ON sts.stop_id = stt.stop_id) 
+WHERE  tp.trip_headsign LIKE '7 GOTTINGEN' 
+       AND tp.route_id LIKE '7-114';
+```
++ 3
+```
+SELECT DISTINCT trip_headsign 
+FROM   trips tp 
+       JOIN stoptimes stt 
+         ON tp.trip_id = stt.trip_id 
+WHERE  arrival_time >= '10:17:00' 
+       AND departure_time <= '12:34:00';
+```
++ 4
+```
+SELECT DISTINCT tp.trip_headsign AS Buses_list 
+FROM   trips tp 
+WHERE  tp.trip_id IN (SELECT stt.trip_id 
+                      FROM   stops sts 
+                             JOIN stoptimes stt 
+                               ON sts.stop_id = stt.stop_id 
+                      WHERE  sts.name_stop LIKE 
+                             "barrington St [southbound] before Blowers St");
+```
+
 ## Installation of Elastic Search on Microsoft Azure:
 
 1)	Created a students account on Microsoft Azure.
